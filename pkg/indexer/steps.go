@@ -10,6 +10,6 @@ var DefaultSteps StepMap
 
 func init() {
 	DefaultSteps = map[database.CreationFlow]Step{
-		database.CollectionCreator: new(steps2.CollectionCreatorStep), // TODO: use reflection to create struct lazily instead?
+		database.CollectionCreator: new(steps2.CollectionCreatorStep), // TODO: just use a function (as part of a struct?) anyways?
 	}
 }

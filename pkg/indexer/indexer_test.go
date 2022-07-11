@@ -24,7 +24,9 @@ func TestIndex(t *testing.T) {
 
 	collection := &database.NFTCollection{}
 
-	if err := Index(context.Background(), collection, map[database.CreationFlow]Step{
+	indexer := new(Indexer)
+
+	if err := indexer.Start(context.Background(), collection, map[database.CreationFlow]Step{
 		m1.CurrentStep: m1,
 		m2.CurrentStep: m2,
 		m3.CurrentStep: m3,

@@ -6,7 +6,7 @@ import (
 	"nft-indexer/pkg/database"
 )
 
-const nullAddress = "0x0000000000000000000000000000000000000000"
+var nullAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 type TokenContract struct {
 	contract      *Contract
@@ -20,7 +20,7 @@ func NewTokenContract(contract *Contract, standard database.TokenStandard) (*Tok
 	}, nil
 }
 
-// GetCreator returns the address of the person who created the token contract.
+// GetCreator returns the address of the person who initially created the token contract.
 // Requires OpenZeppelin's Ownable.sol to be implemented by the contract.
 func (tc *TokenContract) GetCreator() (string, error) {
 	ownable, err := tc.contract.ToOwnable()
@@ -28,7 +28,7 @@ func (tc *TokenContract) GetCreator() (string, error) {
 		return "", err
 	}
 
-	iterator, err := ownable.FilterOwnershipTransferred(nil, []common.Address{common.HexToAddress(nullAddress)}, []common.Address{})
+	iterator, err := ownable.FilterOwnershipTransferred(nil, []common.Address{nullAddress}, []common.Address{})
 	if err != nil {
 		return "", err
 	}
@@ -39,3 +39,5 @@ func (tc *TokenContract) GetCreator() (string, error) {
 
 	return iterator.Event.NewOwner.Hex(), nil
 }
+
+// TODO: get current owner of the contract

@@ -1,6 +1,9 @@
 package nft_indexer
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"strings"
+)
 
 type Configuration struct {
 	OpenSea   OpenSeaConfig
@@ -51,11 +54,15 @@ type InfuraIPFSConfig struct {
 	Secret    string
 }
 
-// Configure loads and parses the configuration file.
-// It should be stored relative to the working directory.
-func Configure() (*Configuration, error) {
-	viper.SetConfigName("config") // name of config file (without extension)
+// ParseConfig loads and parses the specified configuration file.
+func ParseConfig(fileName string) (*Configuration, error) {
+	if split := strings.Split(fileName, "."); len(split) > 0 {
+		fileName = split[0]
+	}
+
+	viper.SetConfigName(fileName) // name of config file (without extension)
 	viper.AddConfigPath(".")
+
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
 	}

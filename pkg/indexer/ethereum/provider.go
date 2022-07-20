@@ -46,3 +46,8 @@ func (p *Provider) Connect(network Network) error {
 
 	return errors.New(fmt.Sprintf("network '%s' not found", network))
 }
+
+func (p *Provider) Close() error {
+	p.ethereum.Close()
+	return nil
+}

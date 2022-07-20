@@ -12,7 +12,7 @@ $ go install github.com/ethereum/go-ethereum/cmd/abigen@latest
 
 To transform an Ethereum ABI to a go package, see the following example:
 
-`$ abigen --abi ./pkg/indexer/ethereum/abi/ERC721.json --pkg indexer --type Erc721 --out ./pkg/indexer/ethereum/erc721.go `.
+`$ abigen --abi ./pkg/indexer/ethereum/abi/ERC721.json --pkg tokens --type Erc721 --out ./pkg/indexer/ethereum/tokens/erc721.go`.
 
 ## Components
 This project consists of multiple components and microservices in order to achieve maximum scalability.

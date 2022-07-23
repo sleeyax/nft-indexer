@@ -6,7 +6,10 @@ import (
 	"nft-indexer/pkg/database"
 )
 
-var nullAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
+var nullAddress = common.HexToAddress("")
+
+// NullAddressError indicates that a function returned a null/zero address.
+var NullAddressError = fmt.Errorf("got null address %s", nullAddress)
 
 type TokenContract struct {
 	contract      *Contract
@@ -40,4 +43,23 @@ func (tc *TokenContract) GetCreator() (string, error) {
 	return iterator.Event.NewOwner.Hex(), nil
 }
 
-// TODO: get current owner of the contract
+// GetOwner returns the address of the contract owner, which is stored in the contract.
+//
+// Requires OpenZeppelin's Ownable.sol to be implemented by the contract.
+func (tc *TokenContract) GetOwner() (string, error) {
+	ownable, err := tc.contract.ToOwnable()
+	if err != nil {
+		return "", err
+	}
+
+	owner, err := ownable.Owner(nil)
+	if err != nil {
+		return "", err
+	}
+
+	if owner == nullAddress {
+		return "", NullAddressError
+	}
+
+	return owner.Hex(), nil
+}

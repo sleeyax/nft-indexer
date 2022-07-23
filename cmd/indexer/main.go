@@ -33,10 +33,16 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	creator, err := token.GetCreator()
+	// find owner or creator
+	var owner string
+	owner, err = token.GetOwner()
+	if err == ethereum.NullAddressError {
+		owner, err = token.GetCreator()
+	}
+
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	log.Println(creator)
+	log.Println(owner)
 }

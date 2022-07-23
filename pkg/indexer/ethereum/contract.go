@@ -2,22 +2,21 @@ package ethereum
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	"nft-indexer/pkg/indexer"
 	"nft-indexer/pkg/indexer/ethereum/tokens"
 )
 
 type Contract struct {
-	indexer.Contract
-	provider *Provider
+	Address   string
+	NetworkId Network
+	provider  *Provider
 }
 
+// NewContract creates a new Ethereum contract.
 func NewContract(address string, networkId Network, provider *Provider) *Contract {
 	return &Contract{
-		Contract: indexer.Contract{
-			Address:   address,
-			NetworkId: string(networkId),
-		},
-		provider: provider,
+		Address:   address,
+		NetworkId: networkId,
+		provider:  provider,
 	}
 }
 

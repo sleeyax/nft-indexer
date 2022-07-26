@@ -6,14 +6,11 @@ import (
 	"nft-indexer/pkg/database"
 )
 
-var nullAddress = common.HexToAddress("")
-
-// NullAddressError indicates that a function returned a null/zero address.
-var NullAddressError = fmt.Errorf("got null address %s", nullAddress)
+var NullAddress = common.HexToAddress("")
 
 type TokenContract struct {
 	contract      *Contract
-	tokenStandard database.TokenStandard
+	TokenStandard database.TokenStandard
 }
 
 func NewTokenContract(contract *Contract, standard database.TokenStandard) (*TokenContract, error) {
@@ -31,7 +28,7 @@ func (tc *TokenContract) GetCreator() (string, error) {
 		return "", err
 	}
 
-	iterator, err := ownable.FilterOwnershipTransferred(nil, []common.Address{nullAddress}, []common.Address{})
+	iterator, err := ownable.FilterOwnershipTransferred(nil, []common.Address{NullAddress}, []common.Address{})
 	if err != nil {
 		return "", err
 	}
@@ -55,10 +52,6 @@ func (tc *TokenContract) GetOwner() (string, error) {
 	owner, err := ownable.Owner(nil)
 	if err != nil {
 		return "", err
-	}
-
-	if owner == nullAddress {
-		return "", NullAddressError
 	}
 
 	return owner.Hex(), nil

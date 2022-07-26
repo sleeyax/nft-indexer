@@ -3,16 +3,24 @@ package indexer
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	nft_indexer "nft-indexer"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
+	"time"
 )
 
 type Indexer struct {
+	io.Closer
 	config   *nft_indexer.Configuration
 	chain    Chain
 	provider *ethereum.Provider // TODO: this should become an interface if we ever want to support multiple chains
+}
+
+type IndexResult struct {
+	Collection *database.NFTCollection
+	Error      error
 }
 
 // New creates a new NFT indexer.
@@ -40,12 +48,15 @@ func New(config *nft_indexer.Configuration, chain Chain, chainConfig interface{}
 }
 
 // Start starts the indexer flow.
-func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection) error {
-	if i.chain != Ethereum {
-		return fmt.Errorf("chain %s is currently unsupported", i.chain)
-	}
+func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection, ch chan IndexResult) {
+	defer close(ch)
 
-	defer i.provider.Close()
+	if i.chain != Ethereum {
+		ch <- IndexResult{
+			Error: fmt.Errorf("chain %s is currently unsupported", i.chain),
+		}
+		return
+	}
 
 	// create contract
 	contract := ethereum.NewContract(collection.Address, ethereum.Network(collection.ChainId), i.provider)
@@ -53,7 +64,8 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection)
 	// parse the contract into an ERC-721 compatible tokenContract contract
 	tokenContract, err := ethereum.NewTokenContract(contract, database.ERC721)
 	if err != nil {
-		return err
+		ch <- IndexResult{Error: err}
+		return
 	}
 
 	if collection.State.Create.Step == "" {
@@ -61,21 +73,47 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection)
 	}
 
 	for {
-		switch collection.State.Create.Step {
-		case database.CollectionCreator:
-			// find owner or creator
-			var owner string
-			owner, err = tokenContract.GetOwner()
-			if err == ethereum.NullAddressError {
-				owner, err = tokenContract.GetCreator()
-			}
+		select {
+		default:
+			switch collection.State.Create.Step {
+			case database.CollectionCreator:
+				// first step resets the colleciton
+				collection.IndexInitiator = ethereum.NullAddress.String()
+				collection.ChainId = string(contract.NetworkId)
+				collection.Address = contract.Address.String()
+				collection.TokenStandard = tokenContract.TokenStandard
+				collection.HasBlueCheck = false
 
-			if err != nil {
-				return err
-			}
+				// try to find the owner or creator
+				var owner string
+				owner, err = tokenContract.GetOwner()
+				if owner == ethereum.NullAddress.String() {
+					owner, err = tokenContract.GetCreator()
+				}
+				if err != nil {
+					log.Printf("failed to find collection owner or creator: %e", err)
+				}
 
-			log.Println(owner)
-			return nil // TODO: write to DB
+				collection.Owner = owner
+
+				collection.State.Create = database.Create{
+					Progress:  0,
+					Step:      database.CollectionMetadata,
+					UpdatedAt: time.Now().Unix(),
+				}
+				collection.State.Version = 1
+				collection.State.Export = database.Export{Done: collection.State.Export.Done}
+
+				ch <- IndexResult{Collection: collection}
+			default:
+				return
+			}
+		case <-ctx.Done():
+			return
 		}
 	}
+}
+
+func (i *Indexer) Close() error {
+	return i.provider.Close()
 }

@@ -88,17 +88,21 @@ type Attribute struct {
 	Values map[string]AttributeMetadata
 }
 
+type Create struct {
+	Step      CreationFlow
+	UpdatedAt int64
+	Error     map[string]interface{}
+	Progress  int
+}
+
+type Export struct {
+	Done bool
+}
+
 type State struct {
 	Version int
-	Create  struct {
-		Step      CreationFlow
-		UpdatedAt int
-		Error     map[string]interface{}
-		Progress  int
-	}
-	Export struct {
-		Done bool
-	}
+	Create  Create
+	Export  Export
 }
 
 type Stats struct {
@@ -107,6 +111,12 @@ type Stats struct {
 	SalesVolume     int
 	OwnerCount      int
 	TokenCount      int
+}
+
+type StatsOverTime struct {
+	Daily   Stats
+	Weekly  Stats
+	Monthly Stats
 }
 
 type NFTCollection struct {
@@ -160,11 +170,7 @@ type NFTCollection struct {
 	State State
 
 	// Statistics.
-	Stats struct {
-		Daily   Stats
-		Weekly  Stats
-		Monthly Stats
-	}
+	Stats StatsOverTime
 
 	// Attributes/traits.
 	Attributes map[string]Attribute

@@ -78,9 +78,9 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 			switch collection.State.Create.Step {
 			case database.CollectionCreator:
 				// first step resets the colleciton
-				collection.IndexInitiator = ethereum.NullAddress.String()
+				collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
 				collection.ChainId = string(contract.NetworkId)
-				collection.Address = contract.Address.String()
+				collection.Address = database.Normalize(contract.Address.String())
 				collection.TokenStandard = tokenContract.TokenStandard
 				collection.HasBlueCheck = false
 
@@ -94,7 +94,7 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 					log.Printf("failed to find collection owner or creator: %e", err)
 				}
 
-				collection.Owner = owner
+				collection.Owner = database.Normalize(owner)
 
 				collection.State.Create = database.Create{
 					Progress:  0,

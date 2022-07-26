@@ -42,8 +42,6 @@ func NewFirestoreDatabaseWriter(ctx context.Context, config *nft_indexer.Configu
 //
 // Maps unlock more functionality with the go firestore SDK compared to a struct.
 func (f *FirestoreDatabaseWriter) toMap(collection *NFTCollection) (map[string]interface{}, error) {
-	// TODO: find alternative; this is (probably) not very efficient!
-
 	b, err := json.Marshal(collection)
 	if err != nil {
 		return nil, err
@@ -59,8 +57,6 @@ func (f *FirestoreDatabaseWriter) toMap(collection *NFTCollection) (map[string]i
 }
 
 func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTCollection, opts ...firestore.SetOption) error {
-	collection.Address = Normalize(collection.Address)
-
 	m, err := f.toMap(collection)
 
 	_, err = f.client.Collection("sleeyaxTestCollections").Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, m, opts...)

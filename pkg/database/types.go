@@ -34,144 +34,144 @@ const (
 )
 
 type Links struct {
-	Timestamp int    `json:"timestamp,omitempty"`
-	Twitter   string `json:"twitter,omitempty"`
-	Discord   string `json:"discord,omitempty"`
-	External  string `json:"external,omitempty"`
-	Medium    string `json:"medium,omitempty"`
-	Slug      string `json:"slug,omitempty"`
-	Telegram  string `json:"telegram,omitempty"`
-	Instagram string `json:"instagram,omitempty"`
-	Wiki      string `json:"wiki,omitempty"`
-	Facebook  string `json:"facebook,omitempty"`
+	Timestamp int    `firestore:"timestamp,omitempty"`
+	Twitter   string `firestore:"twitter,omitempty"`
+	Discord   string `firestore:"discord,omitempty"`
+	External  string `firestore:"external,omitempty"`
+	Medium    string `firestore:"medium,omitempty"`
+	Slug      string `firestore:"slug,omitempty"`
+	Telegram  string `firestore:"telegram,omitempty"`
+	Instagram string `firestore:"instagram,omitempty"`
+	Wiki      string `firestore:"wiki,omitempty"`
+	Facebook  string `firestore:"facebook,omitempty"`
 }
 
 type Partnership struct {
-	Name string `json:"name,omitempty"`
-	Link string `json:"link,omitempty"`
+	Name string `firestore:"name,omitempty"`
+	Link string `firestore:"link,omitempty"`
 }
 
 type Metadata struct {
-	Name         string        `json:"name,omitempty"`
-	Description  string        `json:"description,omitempty"`
-	Symbol       string        `json:"symbol,omitempty"`
-	ProfileImage string        `json:"profileImage,omitempty"`
-	BannerImage  string        `json:"bannerImage,omitempty"`
-	Links        Links         `json:"links,omitempty"`
-	Benefits     []string      `json:"benefits,omitempty"`
-	Partnerships []Partnership `json:"partnerships,omitempty"`
-	DisplayType  string        `json:"displayType,omitempty"`
+	Name         string        `firestore:"name,omitempty"`
+	Description  string        `firestore:"description,omitempty"`
+	Symbol       string        `firestore:"symbol,omitempty"`
+	ProfileImage string        `firestore:"profileImage,omitempty"`
+	BannerImage  string        `firestore:"bannerImage,omitempty"`
+	Links        Links         `firestore:"links,omitempty"`
+	Benefits     []string      `firestore:"benefits,omitempty"`
+	Partnerships []Partnership `firestore:"partnerships,omitempty"`
+	DisplayType  string        `firestore:"displayType,omitempty"`
 }
 
 type AttributeMetadata struct {
 	// Number of tokens with this attribute/trait.
-	Count int `json:"count,omitempty"`
+	Count int `firestore:"count,omitempty"`
 
 	// Percentage of tokens with this attribute/trait.
-	Percent int `json:"percent,omitempty"`
+	Percent int `firestore:"percent,omitempty"`
 
 	// Equals '1 / (percent / 100)'.
-	RarityScore int `json:"rarityScore,omitempty"`
+	RarityScore int `firestore:"rarityScore,omitempty"`
 }
 
 type Attribute struct {
 	// Defines how the attribute is shown on OpenSea.
-	DisplayType DisplayType `json:"displayType,omitempty"`
+	DisplayType DisplayType `firestore:"displayType,omitempty"`
 
 	// Number of NFTs with this attribute/trait.
-	Count int `json:"count,omitempty"`
+	Count int `firestore:"count,omitempty"`
 
 	// Percentage of NFTs with this attribute/trait.
-	Percent int `json:"percent,omitempty"`
+	Percent int `firestore:"percent,omitempty"`
 
 	// Inner AttributeMetadata values.
-	Values map[string]AttributeMetadata `json:"values,omitempty"`
+	Values map[string]AttributeMetadata `firestore:"values,omitempty"`
 }
 
 type Create struct {
-	Step      CreationFlow           `json:"step,omitempty"`
-	UpdatedAt int64                  `json:"updatedAt,omitempty"`
-	Error     map[string]interface{} `json:"error,omitempty"`
-	Progress  int                    `json:"progress,omitempty"`
+	Step      CreationFlow           `firestore:"step,omitempty"`
+	UpdatedAt int64                  `firestore:"updatedAt,omitempty"`
+	Error     map[string]interface{} `firestore:"error,omitempty"`
+	Progress  int                    `firestore:"progress,omitempty"`
 }
 
 type Export struct {
-	Done bool `json:"done,omitempty"`
+	Done bool `firestore:"done,omitempty"`
 }
 
 type State struct {
-	Version int    `json:"version,omitempty"`
-	Create  Create `json:"create,omitempty"`
-	Export  Export `json:"export,omitempty"`
+	Version int    `firestore:"version,omitempty"`
+	Create  Create `firestore:"create,omitempty"`
+	Export  Export `firestore:"export,omitempty"`
 }
 
 type Stats struct {
-	ContractAddress string `json:"contractAddress,omitempty"`
-	AvgPrice        int    `json:"avgPrice,omitempty"`
-	SalesVolume     int    `json:"salesVolume,omitempty"`
-	OwnerCount      int    `json:"ownerCount,omitempty"`
-	TokenCount      int    `json:"tokenCount,omitempty"`
+	ContractAddress string `firestore:"contractAddress,omitempty"`
+	AvgPrice        int    `firestore:"avgPrice,omitempty"`
+	SalesVolume     int    `firestore:"salesVolume,omitempty"`
+	OwnerCount      int    `firestore:"ownerCount,omitempty"`
+	TokenCount      int    `firestore:"tokenCount,omitempty"`
 }
 
 type StatsOverTime struct {
-	Daily   Stats `json:"daily,omitempty"`
-	Weekly  Stats `json:"weekly,omitempty"`
-	Monthly Stats `json:"monthly,omitempty"`
+	Daily   Stats `firestore:"daily,omitempty"`
+	Weekly  Stats `firestore:"weekly,omitempty"`
+	Monthly Stats `firestore:"monthly,omitempty"`
 }
 
 type NFTCollection struct {
 	// Blockchain identifier.
-	ChainId string `json:"chainId,omitempty"`
+	ChainId string `firestore:"chainId,omitempty"`
 
 	// Contract address.
-	Address string `json:"address,omitempty"`
+	Address string `firestore:"address,omitempty"`
 
 	// ERC token standard.
-	TokenStandard TokenStandard `json:"tokenStandard,omitempty"`
+	TokenStandard TokenStandard `firestore:"tokenStandard,omitempty"`
 
 	// Whether the collection is verified.
-	HasBlueCheck bool `json:"hasBlueCheck,omitempty"`
+	HasBlueCheck bool `firestore:"hasBlueCheck,omitempty"`
 
 	// The address that created the contract.
-	Deployer string `json:"deployer,omitempty"`
+	Deployer string `firestore:"deployer,omitempty"`
 
 	// Current owner of the contract.
-	Owner string `json:"owner,omitempty"`
+	Owner string `firestore:"owner,omitempty"`
 
 	// Number of unique owners.
-	NumOwners int `json:"numOwners,omitempty"`
+	NumOwners int `firestore:"numOwners,omitempty"`
 
 	// Unix timestamp that indicates when NumOwners has been last updated.
-	NumOwnersUpdatedAt int `json:"numOwnersUpdatedAt,omitempty"`
+	NumOwnersUpdatedAt int `firestore:"numOwnersUpdatedAt,omitempty"`
 
 	// Unix timestamp that the contract was deployed at (in ms).
-	DeployedAt int `json:"deployedAt,omitempty"`
+	DeployedAt int `firestore:"deployedAt,omitempty"`
 
 	// Block nr the collection was deployed at.
-	DeployedAtBlock int `json:"deployedAtBlock,omitempty"`
+	DeployedAtBlock int `firestore:"deployedAtBlock,omitempty"`
 
 	// Metadata conforming OpenSea's metadata standards.
 	// See: https://docs.opensea.io/docs/metadata-standards
-	Metadata Metadata `json:"metadata,omitempty"`
+	Metadata Metadata `firestore:"metadata,omitempty"`
 
 	// Short slug that is used to refer to this collection in a URL.
-	Slug string `json:"slug,omitempty"`
+	Slug string `firestore:"slug,omitempty"`
 
 	// Number of available tokens in the collection, excluding burned/destroyed tokens.
-	NumNfts int `json:"numNfts,omitempty"`
+	NumNfts int `firestore:"numNfts,omitempty"`
 
 	// Total number of trait types in the collection.
-	NumTraitTypes int `json:"numTraitTypes,omitempty"`
+	NumTraitTypes int `firestore:"numTraitTypes,omitempty"`
 
 	// The address of the person who initiated the NFT database (index or reindex).
-	IndexInitiator string `json:"indexInitiator,omitempty"`
+	IndexInitiator string `firestore:"indexInitiator,omitempty"`
 
 	// Indexer state.
-	State State `json:"state,omitempty"`
+	State State `firestore:"state,omitempty"`
 
 	// Statistics.
-	Stats StatsOverTime `json:"stats,omitempty"`
+	Stats StatsOverTime `firestore:"stats,omitempty"`
 
 	// Attributes/traits.
-	Attributes map[string]Attribute `json:"attributes,omitempty"`
+	Attributes map[string]Attribute `firestore:"attributes,omitempty"`
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"google.golang.org/api/option"
 	nft_indexer "nft-indexer"
+	"strings"
 )
 
 type FirestoreDatabaseWriter struct {
@@ -16,17 +17,12 @@ type FirestoreDatabaseWriter struct {
 func NewFirestoreDatabaseWriter(ctx context.Context, config *nft_indexer.Configuration) (*FirestoreDatabaseWriter, error) {
 	serviceAccount := config.Gcloud.Firestore.ServiceAccount
 
-	if serviceAccount.Type == "" {
-		serviceAccount.Type = "service_account"
+	var clientOptions option.ClientOption
+	if strings.HasSuffix(serviceAccount, ".json") {
+		clientOptions = option.WithCredentialsFile(serviceAccount)
+	} else {
+		clientOptions = option.WithCredentialsJSON([]byte(serviceAccount))
 	}
-
-	// TODO: find out why we can't read firebase creds from yaml
-	/*b, err := json.Marshal(serviceAccount)
-	if err != nil {
-		return nil, err
-	}*/
-
-	clientOptions := option.WithCredentialsFile("creds.json")
 
 	app, err := firebase.NewApp(ctx, nil, clientOptions)
 	if err != nil {
@@ -43,7 +39,7 @@ func NewFirestoreDatabaseWriter(ctx context.Context, config *nft_indexer.Configu
 
 func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTCollection) error {
 	collection.Address = Normalize(collection.Address)
-	_, err := f.client.Collection("sleeyaxTestCollections").Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, collection, firestore.Merge())
+	_, err := f.client.Collection("sleeyaxTestCollections").Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, collection)
 	return err
 }
 

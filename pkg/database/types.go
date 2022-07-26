@@ -34,144 +34,144 @@ const (
 )
 
 type Links struct {
-	Timestamp int
-	Twitter   string
-	Discord   string
-	External  string
-	Medium    string
-	Slug      string
-	Telegram  string
-	Instagram string
-	Wiki      string
-	Facebook  string
+	Timestamp int    `json:"timestamp,omitempty"`
+	Twitter   string `json:"twitter,omitempty"`
+	Discord   string `json:"discord,omitempty"`
+	External  string `json:"external,omitempty"`
+	Medium    string `json:"medium,omitempty"`
+	Slug      string `json:"slug,omitempty"`
+	Telegram  string `json:"telegram,omitempty"`
+	Instagram string `json:"instagram,omitempty"`
+	Wiki      string `json:"wiki,omitempty"`
+	Facebook  string `json:"facebook,omitempty"`
 }
 
 type Partnership struct {
-	Name string
-	Link string
+	Name string `json:"name,omitempty"`
+	Link string `json:"link,omitempty"`
 }
 
 type Metadata struct {
-	Name         string
-	Description  string
-	Symbol       string
-	ProfileImage string
-	BannerImage  string
-	Links        Links
-	Benefits     []string
-	Partnerships []Partnership
-	DisplayType  string
+	Name         string        `json:"name,omitempty"`
+	Description  string        `json:"description,omitempty"`
+	Symbol       string        `json:"symbol,omitempty"`
+	ProfileImage string        `json:"profileImage,omitempty"`
+	BannerImage  string        `json:"bannerImage,omitempty"`
+	Links        Links         `json:"links,omitempty"`
+	Benefits     []string      `json:"benefits,omitempty"`
+	Partnerships []Partnership `json:"partnerships,omitempty"`
+	DisplayType  string        `json:"displayType,omitempty"`
 }
 
 type AttributeMetadata struct {
 	// Number of tokens with this attribute/trait.
-	Count int
+	Count int `json:"count,omitempty"`
 
 	// Percentage of tokens with this attribute/trait.
-	Percent int
+	Percent int `json:"percent,omitempty"`
 
 	// Equals '1 / (percent / 100)'.
-	RarityScore int
+	RarityScore int `json:"rarityScore,omitempty"`
 }
 
 type Attribute struct {
 	// Defines how the attribute is shown on OpenSea.
-	DisplayType DisplayType
+	DisplayType DisplayType `json:"displayType,omitempty"`
 
 	// Number of NFTs with this attribute/trait.
-	Count int
+	Count int `json:"count,omitempty"`
 
 	// Percentage of NFTs with this attribute/trait.
-	Percent int
+	Percent int `json:"percent,omitempty"`
 
 	// Inner AttributeMetadata values.
-	Values map[string]AttributeMetadata
+	Values map[string]AttributeMetadata `json:"values,omitempty"`
 }
 
 type Create struct {
-	Step      CreationFlow
-	UpdatedAt int64
-	Error     map[string]interface{}
-	Progress  int
+	Step      CreationFlow           `json:"step,omitempty"`
+	UpdatedAt int64                  `json:"updatedAt,omitempty"`
+	Error     map[string]interface{} `json:"error,omitempty"`
+	Progress  int                    `json:"progress,omitempty"`
 }
 
 type Export struct {
-	Done bool
+	Done bool `json:"done,omitempty"`
 }
 
 type State struct {
-	Version int
-	Create  Create
-	Export  Export
+	Version int    `json:"version,omitempty"`
+	Create  Create `json:"create,omitempty"`
+	Export  Export `json:"export,omitempty"`
 }
 
 type Stats struct {
-	ContractAddress string
-	AvgPrice        int
-	SalesVolume     int
-	OwnerCount      int
-	TokenCount      int
+	ContractAddress string `json:"contractAddress,omitempty"`
+	AvgPrice        int    `json:"avgPrice,omitempty"`
+	SalesVolume     int    `json:"salesVolume,omitempty"`
+	OwnerCount      int    `json:"ownerCount,omitempty"`
+	TokenCount      int    `json:"tokenCount,omitempty"`
 }
 
 type StatsOverTime struct {
-	Daily   Stats
-	Weekly  Stats
-	Monthly Stats
+	Daily   Stats `json:"daily,omitempty"`
+	Weekly  Stats `json:"weekly,omitempty"`
+	Monthly Stats `json:"monthly,omitempty"`
 }
 
 type NFTCollection struct {
 	// Blockchain identifier.
-	ChainId string
+	ChainId string `json:"chainId,omitempty"`
 
 	// Contract address.
-	Address string
+	Address string `json:"address,omitempty"`
 
 	// ERC token standard.
-	TokenStandard TokenStandard
+	TokenStandard TokenStandard `json:"tokenStandard,omitempty"`
 
 	// Whether the collection is verified.
-	HasBlueCheck bool
+	HasBlueCheck bool `json:"hasBlueCheck,omitempty"`
 
 	// The address that created the contract.
-	Deployer string
+	Deployer string `json:"deployer,omitempty"`
 
 	// Current owner of the contract.
-	Owner string
+	Owner string `json:"owner,omitempty"`
 
 	// Number of unique owners.
-	NumOwners int
+	NumOwners int `json:"numOwners,omitempty"`
 
 	// Unix timestamp that indicates when NumOwners has been last updated.
-	NumOwnersUpdatedAt int
+	NumOwnersUpdatedAt int `json:"numOwnersUpdatedAt,omitempty"`
 
 	// Unix timestamp that the contract was deployed at (in ms).
-	DeployedAt int
+	DeployedAt int `json:"deployedAt,omitempty"`
 
 	// Block nr the collection was deployed at.
-	DeployedAtBlock int
+	DeployedAtBlock int `json:"deployedAtBlock,omitempty"`
 
 	// Metadata conforming OpenSea's metadata standards.
 	// See: https://docs.opensea.io/docs/metadata-standards
-	Metadata Metadata
+	Metadata Metadata `json:"metadata,omitempty"`
 
 	// Short slug that is used to refer to this collection in a URL.
-	Slug string
+	Slug string `json:"slug,omitempty"`
 
 	// Number of available tokens in the collection, excluding burned/destroyed tokens.
-	NumNfts int
+	NumNfts int `json:"numNfts,omitempty"`
 
 	// Total number of trait types in the collection.
-	NumTraitTypes int
+	NumTraitTypes int `json:"numTraitTypes,omitempty"`
 
 	// The address of the person who initiated the NFT database (index or reindex).
-	IndexInitiator string
+	IndexInitiator string `json:"indexInitiator,omitempty"`
 
 	// Indexer state.
-	State State
+	State State `json:"state,omitempty"`
 
 	// Statistics.
-	Stats StatsOverTime
+	Stats StatsOverTime `json:"stats,omitempty"`
 
 	// Attributes/traits.
-	Attributes map[string]Attribute
+	Attributes map[string]Attribute `json:"attributes,omitempty"`
 }

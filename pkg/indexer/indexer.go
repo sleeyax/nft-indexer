@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	nft_indexer "nft-indexer"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
@@ -77,21 +76,27 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 		default:
 			switch collection.State.Create.Step {
 			case database.CollectionCreator:
-				// first step resets the colleciton
+				// first step resets the collection
 				collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
 				collection.ChainId = string(contract.NetworkId)
 				collection.Address = database.Normalize(contract.Address.String())
 				collection.TokenStandard = tokenContract.TokenStandard
 				collection.HasBlueCheck = false
 
+				ownableContract, err := tokenContract.ToOwnable()
+				if err != nil {
+					ch <- IndexResult{Error: err}
+					return
+				}
+
 				// try to find the owner or creator
 				var owner string
-				owner, err = tokenContract.GetOwner()
+				owner, err = ownableContract.GetOwner()
 				if owner == ethereum.NullAddress.String() {
-					owner, err = tokenContract.GetCreator()
+					owner, err = ownableContract.GetCreator()
 				}
 				if err != nil {
-					log.Printf("failed to find collection owner or creator: %e", err)
+					ch <- IndexResult{Error: err}
 				}
 
 				collection.Owner = database.Normalize(owner)

@@ -6,7 +6,7 @@ import (
 	"nft-indexer/pkg/database"
 )
 
-var NullAddress = common.HexToAddress("")
+var NullAddress = common.HexToAddress("0x0000000000000000000000000000000000000000")
 
 type TokenContract struct {
 	contract      *Contract

@@ -10,16 +10,6 @@ import (
 func FindCollectionCreator(ctx context.Context, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
 	step := database.CollectionCreator
 
-	// first step resets the collection
-	// TODO: move this to different step
-	collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
-	collection.ChainId = string(tokenContract.Contract().NetworkId)
-	collection.Address = database.Normalize(tokenContract.Contract().Address.String())
-	collection.TokenStandard = tokenContract.TokenStandard
-	collection.HasBlueCheck = false
-	collection.State.Version = 1
-	collection.State.Export = database.Export{Done: false}
-
 	ownableContract, err := tokenContract.ToOwnable()
 	if err != nil {
 		sink.WriteError(err, step)
@@ -57,7 +47,6 @@ func FindCollectionCreator(ctx context.Context, tokenContract *ethereum.TokenCon
 	collection.Owner = database.Normalize(owner)
 
 	collection.State.Create = database.Create{
-		Progress:  0,
 		Step:      database.CollectionMetadata,
 		UpdatedAt: time.Now().Unix(),
 	}

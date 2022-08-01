@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	"github.com/pkg/errors"
 	"log"
@@ -59,10 +60,14 @@ func main() {
 			log.Println(errors.WithMessage(indexResult.Warning, "indexing step warning"))
 		}
 
-		// log.Println(indexResult.Collection)
-		if err = db.Write(ctx, collection); err != nil {
+		var writeOptions []firestore.SetOption
+		if collection.State.Create.Step == database.Unindexed {
+			writeOptions = append(writeOptions, firestore.MergeAll)
+		}
+		log.Println(indexResult.Collection)
+		/*if err = db.Write(ctx, collection, writeOptions...); err != nil {
 			log.Println(err)
 			return
-		}
+		}*/
 	}
 }

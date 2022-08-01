@@ -78,7 +78,7 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 	}
 
 	if collection.State.Create.Step == "" {
-		collection.State.Create.Step = database.CollectionCreator
+		collection.State.Create.Step = database.Unindexed
 	}
 
 	for {

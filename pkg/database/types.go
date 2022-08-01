@@ -19,6 +19,7 @@ const (
 type CreationFlow string
 
 const (
+	Unindexed          CreationFlow = "unindexed"
 	CollectionCreator  CreationFlow = "collection-creator"
 	CollectionMetadata CreationFlow = "collection-metadata"
 	CollectionMints    CreationFlow = "collection-mints"

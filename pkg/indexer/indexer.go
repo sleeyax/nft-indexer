@@ -89,14 +89,29 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 					return
 				}
 
+				// store contract creation event data
+				creationEvent, err := ownableContract.GetCreationEvent()
+				if err != nil {
+					ch <- IndexResult{Error: err}
+					return
+				}
+				collection.Deployer = database.Normalize(creationEvent.NewOwner.String())
+				collection.DeployedAtBlock = int(creationEvent.Raw.BlockNumber)
+				deployedAt, err := contract.ReadTimestamp(ctx, creationEvent.Raw.BlockHash)
+				if err == nil {
+					collection.DeployedAt = int(deployedAt * 1000)
+				} else {
+					ch <- IndexResult{Error: err}
+				}
+
 				// try to find the owner or creator
 				var owner string
 				owner, err = ownableContract.GetOwner()
-				if owner == ethereum.NullAddress.String() {
-					owner, err = ownableContract.GetCreator()
-				}
 				if err != nil {
 					ch <- IndexResult{Error: err}
+				}
+				if owner == ethereum.NullAddress.String() {
+					owner = creationEvent.NewOwner.String()
 				}
 
 				collection.Owner = database.Normalize(owner)

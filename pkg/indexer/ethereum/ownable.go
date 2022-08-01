@@ -12,21 +12,8 @@ type OwnableTokenContract struct {
 	ownable *tokens.Ownable
 }
 
-// GetCreator returns the address of the person who initially created the token contract.
-func (otc *OwnableTokenContract) GetCreator() (string, error) {
-	iterator, err := otc.ownable.FilterOwnershipTransferred(nil, []common.Address{NullAddress}, []common.Address{})
-	if err != nil {
-		return "", err
-	}
-
-	if !iterator.Next() {
-		return "", fmt.Errorf("failed to find the creator contract %s on network %s", otc.contract.Address, otc.contract.NetworkId)
-	}
-
-	return iterator.Event.NewOwner.Hex(), nil
-}
-
 // GetOwner returns the address of the contract owner, which is stored in the contract.
+// This value could be different from GetCreator.
 func (otc *OwnableTokenContract) GetOwner() (string, error) {
 	owner, err := otc.ownable.Owner(nil)
 	if err != nil {
@@ -34,4 +21,18 @@ func (otc *OwnableTokenContract) GetOwner() (string, error) {
 	}
 
 	return owner.Hex(), nil
+}
+
+// GetCreationEvent returns the transaction (on chain) where the contract was first created.
+func (otc *OwnableTokenContract) GetCreationEvent() (*tokens.OwnableOwnershipTransferred, error) {
+	iterator, err := otc.ownable.FilterOwnershipTransferred(nil, []common.Address{NullAddress}, []common.Address{})
+	if err != nil {
+		return nil, err
+	}
+
+	if !iterator.Next() {
+		return nil, fmt.Errorf("failed to get contract creation event of contract %s on network %s", otc.contract.Address, otc.contract.NetworkId)
+	}
+
+	return iterator.Event, nil
 }

@@ -30,3 +30,8 @@ func (tc *TokenContract) ToOwnable() (*OwnableTokenContract, error) {
 		ownable:       ownable,
 	}, nil
 }
+
+// Contract is a getter for the underlying Contract.
+func (tc *TokenContract) Contract() *Contract {
+	return tc.contract
+}

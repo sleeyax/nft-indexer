@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"log"
 	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
@@ -47,10 +48,15 @@ func main() {
 			return // channel was closed by the indexer, so we should stop this goroutine as well
 		}
 
-		// indexer returned an error and has exited
+		// an indexer step returned an error, skip current loop
 		if indexResult.Error != nil {
-			log.Println(indexResult.Error)
-			return
+			log.Println(errors.WithMessage(indexResult.Error, "indexing step error"))
+			break
+		}
+
+		// an indexer step returned a warning, continue
+		if indexResult.Warning != nil {
+			log.Println(errors.WithMessage(indexResult.Warning, "indexing step warning"))
 		}
 
 		// log.Println(indexResult.Collection)

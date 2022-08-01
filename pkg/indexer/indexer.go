@@ -7,7 +7,6 @@ import (
 	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
-	"time"
 )
 
 type Indexer struct {
@@ -18,8 +17,19 @@ type Indexer struct {
 }
 
 type IndexResult struct {
+	// Currently accumulated NFT collection data.
 	Collection *database.NFTCollection
-	Error      error
+
+	// Fatal error message.
+	// If this field is set, the function that handles the Step has stopped processing information.
+	Error error
+
+	// Nonfatal error message.
+	// Unlike Error, if this field is set, the function that handles the Step will continue processing information.
+	Warning error
+
+	// Current indexing step.
+	Step database.CreationFlow
 }
 
 // New creates a new NFT indexer.
@@ -50,20 +60,20 @@ func New(config *config.Configuration, chain Chain, chainConfig interface{}) (*I
 func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection, ch chan IndexResult) {
 	defer close(ch)
 
+	sink := NewSink(ch)
+
 	if i.chain != Ethereum {
-		ch <- IndexResult{
-			Error: fmt.Errorf("chain %s is currently unsupported", i.chain),
-		}
+		sink.WriteError(fmt.Errorf("chain %s is currently unsupported", i.chain))
 		return
 	}
 
 	// create contract
 	contract := ethereum.NewContract(collection.Address, ethereum.Network(collection.ChainId), i.provider)
 
-	// parse the contract into an ERC-721 compatible tokenContract contract
+	// parse the contract into an ERC-721 compatible token contract
 	tokenContract, err := ethereum.NewTokenContract(contract, database.ERC721)
 	if err != nil {
-		ch <- IndexResult{Error: err}
+		sink.WriteError(err)
 		return
 	}
 
@@ -74,60 +84,16 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 	for {
 		select {
 		default:
-			switch collection.State.Create.Step {
-			case database.CollectionCreator:
-				// first step resets the collection
-				collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
-				collection.ChainId = string(contract.NetworkId)
-				collection.Address = database.Normalize(contract.Address.String())
-				collection.TokenStandard = tokenContract.TokenStandard
-				collection.HasBlueCheck = false
-
-				ownableContract, err := tokenContract.ToOwnable()
-				if err != nil {
-					ch <- IndexResult{Error: err}
-					return
-				}
-
-				// store contract creation event data
-				creationEvent, err := ownableContract.GetCreationEvent()
-				if err != nil {
-					ch <- IndexResult{Error: err}
-					return
-				}
-				collection.Deployer = database.Normalize(creationEvent.NewOwner.String())
-				collection.DeployedAtBlock = int(creationEvent.Raw.BlockNumber)
-				deployedAt, err := contract.ReadTimestamp(ctx, creationEvent.Raw.BlockHash)
-				if err == nil {
-					collection.DeployedAt = int(deployedAt * 1000)
-				} else {
-					ch <- IndexResult{Error: err}
-				}
-
-				// try to find the owner or creator
-				var owner string
-				owner, err = ownableContract.GetOwner()
-				if err != nil {
-					ch <- IndexResult{Error: err}
-				}
-				if owner == ethereum.NullAddress.String() {
-					owner = creationEvent.NewOwner.String()
-				}
-
-				collection.Owner = database.Normalize(owner)
-
-				collection.State.Create = database.Create{
-					Progress:  0,
-					Step:      database.CollectionMetadata,
-					UpdatedAt: time.Now().Unix(),
-				}
-				collection.State.Version = 1
-				collection.State.Export = database.Export{Done: collection.State.Export.Done}
-
-				ch <- IndexResult{Collection: collection}
-			default:
+			if collection.State.Create.Step == database.Complete {
 				return
 			}
+
+			stepFunc, ok := Steps[collection.State.Create.Step]
+			if !ok {
+				return
+			}
+
+			stepFunc(ctx, tokenContract, collection, sink)
 		case <-ctx.Done():
 			return
 		}

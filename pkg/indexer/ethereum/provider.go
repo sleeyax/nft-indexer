@@ -4,17 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ethereum/go-ethereum/ethclient"
-	nft_indexer "nft-indexer"
+	config "nft-indexer/pkg/config"
+	"nft-indexer/pkg/utils"
 )
 
 type Provider struct {
-	config   *nft_indexer.Configuration
+	config   *config.Configuration
 	ethereum *ethclient.Client
 }
 
 // NewProvider creates a new ethereum provider instance.
-func NewProvider(config *nft_indexer.Configuration) *Provider {
-	return &Provider{config: config}
+func NewProvider(cfg *config.Configuration) *Provider {
+	return &Provider{config: cfg}
 }
 
 // Connect connects to the specified ethereum network over JSON RPC.
@@ -29,7 +30,7 @@ func (p *Provider) Connect(network Network) error {
 			rpcUrls = p.config.Alchemy.JsonRpc.Goerli
 		}
 
-		rpcUrl := nft_indexer.RandomItem(rpcUrls)
+		rpcUrl := utils.RandomItem(rpcUrls)
 
 		conn, err := ethclient.Dial(rpcUrl)
 		if err != nil {

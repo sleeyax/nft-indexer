@@ -1,4 +1,4 @@
-package nft_indexer
+package utils
 
 import "math/rand"
 

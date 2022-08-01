@@ -6,7 +6,7 @@ import (
 	firebase "firebase.google.com/go"
 	"fmt"
 	"google.golang.org/api/option"
-	nft_indexer "nft-indexer"
+	"nft-indexer/pkg/config"
 	"strings"
 )
 
@@ -14,8 +14,8 @@ type FirestoreDatabaseWriter struct {
 	client *firestore.Client
 }
 
-func NewFirestoreDatabaseWriter(ctx context.Context, config *nft_indexer.Configuration) (*FirestoreDatabaseWriter, error) {
-	serviceAccount := config.Gcloud.Firestore.ServiceAccount
+func NewFirestoreDatabaseWriter(ctx context.Context, cfg *config.Configuration) (*FirestoreDatabaseWriter, error) {
+	serviceAccount := cfg.Gcloud.Firestore.ServiceAccount
 
 	var clientOptions option.ClientOption
 	if strings.HasSuffix(serviceAccount, ".json") {

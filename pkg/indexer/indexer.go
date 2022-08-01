@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	nft_indexer "nft-indexer"
+	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
 	"time"
@@ -12,7 +12,7 @@ import (
 
 type Indexer struct {
 	io.Closer
-	config   *nft_indexer.Configuration
+	config   *config.Configuration
 	chain    Chain
 	provider *ethereum.Provider // TODO: this should become an interface if we ever want to support multiple chains
 }
@@ -25,7 +25,7 @@ type IndexResult struct {
 // New creates a new NFT indexer.
 //
 // The third argument can contain any parameters that are required to initialize a connection to the chain.
-func New(config *nft_indexer.Configuration, chain Chain, chainConfig interface{}) (*Indexer, error) {
+func New(config *config.Configuration, chain Chain, chainConfig interface{}) (*Indexer, error) {
 	i := &Indexer{config: config, chain: chain}
 
 	switch chain {

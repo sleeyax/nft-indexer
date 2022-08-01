@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"log"
-	nft_indexer "nft-indexer"
+	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
-	nftindexer "nft-indexer/pkg/indexer"
+	indexer "nft-indexer/pkg/indexer"
 	"nft-indexer/pkg/indexer/ethereum"
 )
 
 func main() {
-	// read config file
-	config, err := nft_indexer.ParseConfig("config.yaml")
+	// read c file
+	c, err := config.ParseConfig("config.yaml")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -26,16 +26,16 @@ func main() {
 	ctx := context.Background()
 
 	// connect to firestore DB
-	db, err := database.NewFirestoreDatabaseWriter(ctx, config)
+	db, err := database.NewFirestoreDatabaseWriter(ctx, c)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer db.Close()
 
-	ch := make(chan nftindexer.IndexResult)
+	ch := make(chan indexer.IndexResult)
 
 	// start indexer in separate goroutine
-	idx, err := nftindexer.New(config, nftindexer.Ethereum, ethereum.MainNetwork)
+	idx, err := indexer.New(c, indexer.Ethereum, ethereum.MainNetwork)
 	go idx.Start(ctx, collection, ch)
 
 	// keep looping in the main goroutine until the indexer goroutine closed the channel

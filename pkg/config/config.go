@@ -1,4 +1,4 @@
-package nft_indexer
+package config
 
 import (
 	"github.com/spf13/viper"

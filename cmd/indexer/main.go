@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cloud.google.com/go/firestore"
 	"context"
 	"flag"
 	"github.com/pkg/errors"
@@ -39,12 +38,19 @@ func main() {
 
 	ctx := context.Background()
 
-	// connect to firestore DB
-	db, err := database.NewFirestoreDatabaseWriter(ctx, c)
-	if err != nil {
-		log.Fatalln(err)
+	// connect to DB
+	var db database.Writer
+	if useFirestore {
+		db, err = database.NewFirestoreDatabaseWriter(ctx, c)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		defer db.Close()
+	} else if useConsole {
+		db = database.NewConsoleWriter()
+	} else if useFile {
+		panic("TODO: implement me")
 	}
-	defer db.Close()
 
 	ch := make(chan indexer.IndexResult)
 
@@ -72,33 +78,18 @@ func main() {
 			log.Println(errors.WithMessage(indexResult.Warning, "indexing step warning"))
 		}
 
-		var writeOptions []firestore.SetOption
-		if collection.State.Create.Step == database.Unindexed {
-			writeOptions = append(writeOptions, firestore.MergeAll)
-		}
-
 		// write results to whatever output formats were specified
-		if useFirestore {
-			if indexResult.Collection != nil {
-				if err = db.WriteNFTCollection(ctx, indexResult.Collection, writeOptions...); err != nil {
-					log.Println(err)
-					return
-				}
-			}
-			if indexResult.Stats != nil {
-				if err = db.WriteStats(ctx, indexResult.Stats, writeOptions...); err != nil {
-					log.Println(err)
-					return
-				}
+		if indexResult.Collection != nil {
+			if err = db.WriteNFTCollection(ctx, indexResult.Collection); err != nil {
+				log.Println(err)
+				return
 			}
 		}
-		if useConsole {
-			// TODO: improve output
-			log.Println(indexResult.Collection)
-			log.Println(indexResult.Stats)
-		}
-		if useFile {
-			// TODO: write to .json file
+		if indexResult.Stats != nil {
+			if err = db.WriteStats(ctx, indexResult.Stats); err != nil {
+				log.Println(err)
+				return
+			}
 		}
 	}
 }

@@ -95,7 +95,7 @@ func writeAggregatedStats(wg *sync.WaitGroup, apiKey string, address string, col
 	}
 
 	sink.Write(IndexResult{
-		Stats: &database.CollectionStats{
+		Stats: &database.NftCollectionStats{
 			ChainId:                   collection.ChainId,
 			CollectionAddress:         collection.Address,
 			Volume:                    stats.Data.AggregateStat.SalesVolume.ChainTokenPrice,

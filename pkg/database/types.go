@@ -116,7 +116,7 @@ type Stats struct {
 	TokenCount      int    `firestore:"tokenCount,omitempty"`
 }
 
-type CollectionStats struct {
+type NftCollectionStats struct {
 	ChainId                   string      `firestore:"chainId,omitempty"`
 	CollectionAddress         string      `firestore:"collectionAddress,omitempty"`
 	Volume                    float64     `firestore:"volume,omitempty"`

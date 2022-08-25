@@ -7,6 +7,10 @@ import (
 
 type Writer interface {
 	io.Closer
-	// Write writes a NFT collection to a database or some other kind of storage.
-	Write(ctx context.Context, collection *NFTCollection) error
+
+	// WriteNFTCollection nftCollections a NFT collection to a database or some other kind of storage.
+	WriteNFTCollection(ctx context.Context, collection *NFTCollection) error
+
+	// WriteStats nftCollections NFT collection stats to a database or some other kind of storage.
+	WriteStats(ctx context.Context, stats *NftCollectionStats) error
 }

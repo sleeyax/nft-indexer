@@ -12,6 +12,7 @@ type Configuration struct {
 	Moralis   MoralisConfig
 	Mnemonic  MnemonicConfig
 	QuickNode QuickNodeConfig
+	Zora      ZoraConfig
 }
 
 type OpenSeaConfig struct {
@@ -58,6 +59,10 @@ type InfuraConfig struct {
 type InfuraIPFSConfig struct {
 	ProjectId string
 	Secret    string
+}
+
+type ZoraConfig struct {
+	ApiKey string
 }
 
 // ParseConfig loads and parses the specified configuration file.

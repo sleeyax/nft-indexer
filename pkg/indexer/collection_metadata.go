@@ -6,22 +6,50 @@ import (
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
 	"nft-indexer/pkg/indexer/thirdparty/opensea"
+	"nft-indexer/pkg/indexer/thirdparty/zora"
 	"nft-indexer/pkg/utils"
+	"sync"
 	"time"
 )
 
 func GetCollectionMetadata(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
-	step := database.CollectionMetadata
+	var wg sync.WaitGroup
 
-	os, err := opensea.NewOpenSea(utils.RandomItem(config.OpenSea.ApiKeys))
-	if err != nil {
-		sink.WriteError(err, step)
+	wg.Add(2)
+
+	go writeOpenSeaCollectionMetadata(&wg, utils.RandomItem(config.OpenSea.ApiKeys), tokenContract.Contract().Address.String(), collection, sink)
+	go writeAggregatedStats(&wg, config.Zora.ApiKey, tokenContract.Contract().Address.String(), collection, sink)
+
+	wg.Wait()
+
+	// The collection name should be set.
+	// If not, it means we couldn't fetch the collection details from OpenSea.
+	// This is considered fatal and the error (containing more details about the failure) is already logged in the goroutine.
+	if collection.Metadata.Name == "" {
 		return
 	}
 
-	osCollection, err := os.GetNFTCollection(tokenContract.Contract().Address.String())
+	collection.State.Create = database.Create{
+		Step:      database.TokenMetadata,
+		UpdatedAt: time.Now().Unix(),
+	}
+
+	sink.Write(IndexResult{Collection: collection, Step: database.CollectionMetadata})
+}
+
+// writeOpenSeaCollectionMetadata writes collection details and metadata from OpenSea to the collection.
+func writeOpenSeaCollectionMetadata(wg *sync.WaitGroup, apiKey string, address string, collection *database.NFTCollection, sink *Sink) {
+	defer wg.Done()
+
+	os, err := opensea.NewOpenSea(apiKey)
 	if err != nil {
-		sink.WriteError(err, step)
+		panic(err)
+		return
+	}
+
+	osCollection, err := os.GetNFTCollection(address)
+	if err != nil {
+		sink.WriteError(err, database.CollectionMetadata)
 		return
 	}
 
@@ -49,10 +77,34 @@ func GetCollectionMetadata(ctx context.Context, config *config.Configuration, to
 	}
 	collection.HasBlueCheck = osCollection.Collection.SafelistRequestStatus == "verified"
 	collection.Slug = utils.Ternary(osCollection.Collection.Slug != "", utils.ToSearchFriendly(osCollection.Collection.Slug), "")
-	collection.State.Create = database.Create{
-		Step:      database.TokenMetadata,
-		UpdatedAt: time.Now().Unix(),
+}
+
+func writeAggregatedStats(wg *sync.WaitGroup, apiKey string, address string, collection *database.NFTCollection, sink *Sink) {
+	defer wg.Done()
+
+	z, err := zora.NewGraphQLClient(apiKey)
+	if err != nil {
+		panic(err)
+		return
 	}
 
-	sink.Write(IndexResult{Collection: collection, Step: step})
+	stats, err := z.AggregateStat(address, 10)
+	if err != nil {
+		sink.WriteError(err, database.CollectionMetadata)
+		return
+	}
+
+	sink.Write(IndexResult{
+		Stats: &database.CollectionStats{
+			ChainId:                   collection.ChainId,
+			CollectionAddress:         collection.Address,
+			Volume:                    stats.Data.AggregateStat.SalesVolume.ChainTokenPrice,
+			NumSales:                  stats.Data.AggregateStat.SalesVolume.TotalCount,
+			VolumeUSDC:                stats.Data.AggregateStat.SalesVolume.UsdcPrice,
+			NumOwners:                 stats.Data.AggregateStat.OwnerCount,
+			NumNfts:                   stats.Data.AggregateStat.NftCount,
+			TopOwnersByOwnedNftsCount: stats.Data.AggregateStat.OwnersByCount.Nodes,
+			UpdatedAt:                 time.Now().UnixMilli(),
+		},
+	})
 }

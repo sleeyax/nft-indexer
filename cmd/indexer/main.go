@@ -65,6 +65,7 @@ func main() {
 			writeOptions = append(writeOptions, firestore.MergeAll)
 		}
 		log.Println(indexResult.Collection)
+		log.Println(indexResult.Stats)
 		/*if err = db.Write(ctx, collection, writeOptions...); err != nil {
 			log.Println(err)
 			return

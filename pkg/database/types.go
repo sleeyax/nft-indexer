@@ -1,5 +1,7 @@
 package database
 
+import "nft-indexer/pkg/indexer/thirdparty/zora"
+
 type TokenStandard string
 
 const (
@@ -112,6 +114,18 @@ type Stats struct {
 	SalesVolume     int    `firestore:"salesVolume,omitempty"`
 	OwnerCount      int    `firestore:"ownerCount,omitempty"`
 	TokenCount      int    `firestore:"tokenCount,omitempty"`
+}
+
+type CollectionStats struct {
+	ChainId                   string      `firestore:"chainId,omitempty"`
+	CollectionAddress         string      `firestore:"collectionAddress,omitempty"`
+	Volume                    float64     `firestore:"volume,omitempty"`
+	NumSales                  int         `firestore:"numSales,omitempty"`
+	VolumeUSDC                float64     `firestore:"volumeUSDC,omitempty"`
+	NumOwners                 int         `firestore:"numOwners,omitempty"`
+	NumNfts                   int         `firestore:"numNfts,omitempty"`
+	TopOwnersByOwnedNftsCount []zora.Node `firestore:"topOwnersByOwnedNftsCount,omitempty"`
+	UpdatedAt                 int64       `firestore:"updatedAt,omitempty"`
 }
 
 type StatsOverTime struct {

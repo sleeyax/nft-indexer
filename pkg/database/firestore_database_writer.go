@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+const nftCollectionsCollection = "sleeyaxTestCollections"
+
 type FirestoreDatabaseWriter struct {
 	client *firestore.Client
 }
@@ -40,7 +42,15 @@ func NewFirestoreDatabaseWriter(ctx context.Context, cfg *config.Configuration) 
 func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTCollection, opts ...firestore.SetOption) error {
 	m := toFirestoreMap(collection)
 
-	_, err := f.client.Collection("sleeyaxTestCollections").Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, m, opts...)
+	_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, m, opts...)
+
+	return err
+}
+
+func (f *FirestoreDatabaseWriter) WriteStats(ctx context.Context, stats *CollectionStats, opts ...firestore.SetOption) error {
+	m := toFirestoreMap(stats)
+
+	_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", stats.ChainId, stats.CollectionAddress)).Collection("collectionStats").Doc("all").Set(ctx, m, opts...)
 
 	return err
 }

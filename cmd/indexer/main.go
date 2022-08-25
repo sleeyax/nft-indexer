@@ -3,6 +3,7 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	"flag"
 	"github.com/pkg/errors"
 	"log"
 	"nft-indexer/pkg/config"
@@ -12,6 +13,17 @@ import (
 )
 
 func main() {
+	// read CLI flags
+	var useFirestore, useConsole, useFile bool
+	flag.BoolVar(&useFirestore, "firestore", false, "Write results to firestore")
+	flag.BoolVar(&useConsole, "console", false, "Write results to console")
+	flag.BoolVar(&useFile, "file", false, "Write results to a JSON file")
+	flag.Parse()
+
+	if !useFirestore && !useConsole && !useFile {
+		log.Fatalln("Missing flags.\nUsage: ./indexer [-console, -firestore, -file]\nExamples:\n./indexer -console\n./indexer -firestore\n./indexer -console -firestore")
+	}
+
 	// read config file
 	c, err := config.ParseConfig("config.yaml")
 	if err != nil {
@@ -64,11 +76,29 @@ func main() {
 		if collection.State.Create.Step == database.Unindexed {
 			writeOptions = append(writeOptions, firestore.MergeAll)
 		}
-		log.Println(indexResult.Collection)
-		log.Println(indexResult.Stats)
-		/*if err = db.WriteNFTCollection(ctx, collection, writeOptions...); err != nil {
-			log.Println(err)
-			return
-		}*/
+
+		// write results to whatever output formats were specified
+		if useFirestore {
+			if indexResult.Collection != nil {
+				if err = db.WriteNFTCollection(ctx, indexResult.Collection, writeOptions...); err != nil {
+					log.Println(err)
+					return
+				}
+			}
+			if indexResult.Stats != nil {
+				if err = db.WriteStats(ctx, indexResult.Stats, writeOptions...); err != nil {
+					log.Println(err)
+					return
+				}
+			}
+		}
+		if useConsole {
+			// TODO: improve output
+			log.Println(indexResult.Collection)
+			log.Println(indexResult.Stats)
+		}
+		if useFile {
+			// TODO: write to .json file
+		}
 	}
 }

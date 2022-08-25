@@ -2,12 +2,13 @@ package indexer
 
 import (
 	"context"
+	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
 	"time"
 )
 
-func FindCollectionCreator(ctx context.Context, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
+func FindCollectionCreator(ctx context.Context, _ *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
 	step := database.CollectionCreator
 
 	ownableContract, err := tokenContract.ToOwnable()
@@ -41,7 +42,7 @@ func FindCollectionCreator(ctx context.Context, tokenContract *ethereum.TokenCon
 		sink.WriteWarning(err, step)
 	}
 	if owner == ethereum.NullAddress.String() {
-		owner = creationEvent.NewOwner.String()
+		owner = collection.Deployer
 	}
 
 	collection.Owner = database.Normalize(owner)

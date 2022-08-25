@@ -2,19 +2,18 @@ package indexer
 
 import (
 	"context"
+	"nft-indexer/pkg/config"
 	"nft-indexer/pkg/database"
 	"nft-indexer/pkg/indexer/ethereum"
 	"time"
 )
 
-type NextFunc = func(nextStep database.CreationFlow)
-
-type Step = func(ctx context.Context, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink)
+type Step = func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink)
 
 type StepMap = map[database.CreationFlow]Step
 
 var Steps StepMap = map[database.CreationFlow]Step{
-	database.Unindexed: func(ctx context.Context, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
+	database.Unindexed: func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
 		// first step resets the collection
 		collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
 		collection.ChainId = string(tokenContract.Contract().NetworkId)
@@ -36,5 +35,6 @@ var Steps StepMap = map[database.CreationFlow]Step{
 			Step:       database.Unindexed,
 		})
 	},
-	database.CollectionCreator: FindCollectionCreator,
+	database.CollectionCreator:  FindCollectionCreator,
+	database.CollectionMetadata: GetCollectionMetadata,
 }

@@ -35,7 +35,7 @@ const (
 )
 
 type Links struct {
-	Timestamp int    `firestore:"timestamp,omitempty"`
+	Timestamp int64  `firestore:"timestamp,omitempty"`
 	Twitter   string `firestore:"twitter,omitempty"`
 	Discord   string `firestore:"discord,omitempty"`
 	External  string `firestore:"external,omitempty"`

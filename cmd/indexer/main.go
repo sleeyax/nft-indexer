@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	// read c file
+	// read config file
 	c, err := config.ParseConfig("config.yaml")
 	if err != nil {
 		log.Fatalln(err)

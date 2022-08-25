@@ -93,7 +93,7 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 				return
 			}
 
-			stepFunc(ctx, tokenContract, collection, sink)
+			stepFunc(ctx, i.config, tokenContract, collection, sink)
 		case <-ctx.Done():
 			return
 		}

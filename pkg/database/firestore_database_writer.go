@@ -39,7 +39,7 @@ func NewFirestoreDatabaseWriter(ctx context.Context, cfg *config.Configuration) 
 	return &FirestoreDatabaseWriter{client}, nil
 }
 
-func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTCollection, opts ...firestore.SetOption) error {
+func (f *FirestoreDatabaseWriter) WriteNFTCollection(ctx context.Context, collection *NFTCollection, opts ...firestore.SetOption) error {
 	m := toFirestoreMap(collection)
 
 	_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, m, opts...)

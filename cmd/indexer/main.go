@@ -66,7 +66,7 @@ func main() {
 		}
 		log.Println(indexResult.Collection)
 		log.Println(indexResult.Stats)
-		/*if err = db.Write(ctx, collection, writeOptions...); err != nil {
+		/*if err = db.WriteNFTCollection(ctx, collection, writeOptions...); err != nil {
 			log.Println(err)
 			return
 		}*/

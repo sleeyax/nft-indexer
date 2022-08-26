@@ -45,12 +45,12 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		defer db.Close()
 	} else if useConsole {
 		db = database.NewConsoleWriter()
 	} else if useFile {
 		panic("TODO: implement me")
 	}
+	defer db.Close()
 
 	ch := make(chan indexer.IndexResult)
 

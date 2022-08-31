@@ -51,8 +51,8 @@ func GetTokenMetadata(ctx context.Context, config *config.Configuration, tokenCo
 
 			for _, attr := range token.Attributes {
 				metadata.Attributes = append(metadata.Attributes, database.Erc721TokenAttribute{
-					Value:     attr.Key,
-					TraitType: attr.Value,
+					Value:     attr.Value,
+					TraitType: attr.Key,
 				})
 			}
 

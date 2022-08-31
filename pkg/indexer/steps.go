@@ -37,6 +37,21 @@ var Steps StepMap = map[database.CreationStep]Step{
 	},
 	database.CollectionCreatorStep:  FindCollectionCreator,
 	database.CollectionMetadataStep: GetCollectionMetadata,
-	database.TokenMetadataStep:      GetTokenMetadata,
-	database.CollectionMintsStep:    GetTokensAndMintInfo,
+	// NOTE: this step is skipped because the data is already retrieved in the next step
+	// see: https://github.com/sleeyax/nft-indexer/issues/12
+	// database.TokenMetadataStep:      GetTokenMetadata,
+	database.TokenMetadataStep: func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
+		collection.State = database.State{
+			Create: database.Create{
+				Step:      database.CollectionMintsStep,
+				UpdatedAt: time.Now().Unix(),
+			},
+		}
+
+		sink.Write(IndexResult{
+			Collection: collection,
+			Step:       database.TokenMetadataStep,
+		})
+	},
+	database.CollectionMintsStep: GetTokensAndMintInfo,
 }

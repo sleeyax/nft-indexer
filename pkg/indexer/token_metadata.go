@@ -68,7 +68,7 @@ func GetTokenMetadata(ctx context.Context, config *config.Configuration, tokenCo
 				TokenStandard:     database.ERC721,
 			}
 
-			if tokenIdNumeric, err := strconv.Atoi(token.TokenId); err != nil {
+			if tokenIdNumeric, err := strconv.Atoi(token.TokenId); err == nil {
 				erc721token.TokenIdNumeric = tokenIdNumeric
 			}
 

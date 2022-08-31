@@ -82,7 +82,7 @@ func GetTokensAndMintInfo(ctx context.Context, config *config.Configuration, tok
 				MintCurrencyName:     token.MintInfo.Price.ChainTokenPrice.Currency.Name,
 			}
 
-			if tokenIdNumeric, err := strconv.Atoi(token.TokenId); err != nil {
+			if tokenIdNumeric, err := strconv.Atoi(token.TokenId); err == nil {
 				erc721token.TokenIdNumeric = tokenIdNumeric
 			}
 

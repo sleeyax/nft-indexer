@@ -25,7 +25,7 @@ func (ac *ApiClient) GetTokensInfo(contract string, limit int, cursor string) (*
 	}
 
 	if cursor != "" {
-		searchParams.Add("continuation", cursor)
+		searchParams["continuation"] = append(searchParams["continuation"], cursor)
 	}
 
 	res, err := ac.client.Get("tokens/details/v4", &gotcha.Options{

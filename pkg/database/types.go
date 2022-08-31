@@ -195,4 +195,44 @@ type NFTCollection struct {
 	// NFT collection statistics received from Zora.
 	// Note that this information isn't stored in the database.
 	ZoraStats *ZoraNFTStats `firestore:"-" json:"zoraStats,omitempty"`
+
+	// List of NFTs in this collection.
+	Tokens []Erc721Token `firestore:"-" json:"tokens"`
+}
+
+type Erc721Token struct {
+	Slug              string              `firestore:"slug,omitempty" json:"slug,omitempty"`
+	TokenId           string              `firestore:"tokenId,omitempty" json:"tokenId,omitempty"`
+	TokenIdNumeric    int                 `firestore:"tokenIdNumeric,omitempty" json:"tokenIdNumeric,omitempty"`
+	ChainId           string              `firestore:"chainId,omitempty" json:"chainId,omitempty"`
+	CollectionAddress string              `firestore:"collectionAddress,omitempty" json:"collectionAddress,omitempty"`
+	NumTraitTypes     int                 `firestore:"numTraitTypes,omitempty" json:"numTraitTypes,omitempty"`
+	Metadata          Erc721TokenMetadata `firestore:"metadata,omitempty" json:"metadata"`
+	UpdatedAt         int64               `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	Owner             string              `firestore:"owner,omitempty" json:"owner,omitempty"`
+	TokenStandard     TokenStandard       `firestore:"tokenStandard,omitempty" json:"tokenStandard,omitempty"`
+	Image             Erc721TokenImage    `firestore:"image,omitempty" json:"image"`
+}
+
+type Erc721TokenImage struct {
+	Url       string `firestore:"url,omitempty" json:"url,omitempty"`
+	UpdatedAt int64  `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+}
+
+type Erc721TokenAttribute struct {
+	Value     string `firestore:"value,omitempty" json:"value,omitempty"`
+	TraitType string `firestore:"traitType,omitempty" json:"trait_type,omitempty"`
+}
+
+type Erc721TokenMetadata struct {
+	Name            string                 `firestore:"name,omitempty" json:"name,omitempty"`
+	Title           string                 `firestore:"title,omitempty" json:"title,omitempty"`
+	Image           string                 `firestore:"image,omitempty" json:"image,omitempty"`
+	ImageData       string                 `firestore:"imageData,omitempty" json:"image_data,omitempty"`
+	ExternalUrl     string                 `firestore:"externalUrl,omitempty" json:"external_url,omitempty"`
+	Description     string                 `firestore:"description,omitempty" json:"description,omitempty"`
+	BackgroundColor string                 `firestore:"backgroundColor,omitempty" json:"background_color,omitempty"`
+	AnimationUrl    string                 `firestore:"animationUrl,omitempty" json:"animation_url,omitempty"`
+	YoutubeUrl      string                 `firestore:"youtubeUrl,omitempty" json:"youtube_url,omitempty"`
+	Attributes      []Erc721TokenAttribute `firestore:"attributes,omitempty" json:"attributes,omitempty"`
 }

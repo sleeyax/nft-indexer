@@ -10,7 +10,10 @@ import (
 	"strings"
 )
 
-const nftCollectionsCollection = "sleeyaxTestCollections"
+const (
+	nftCollectionsCollection = "sleeyaxTestCollections"
+	maxBatchWritesPerRequest = 500
+)
 
 type FirestoreDatabaseWriter struct {
 	client *firestore.Client
@@ -48,6 +51,29 @@ func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTColl
 		_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ZoraStats.ChainId, collection.ZoraStats.CollectionAddress)).Collection("collectionStats").Doc("all").Set(ctx, m, firestore.MergeAll)
 		if err != nil {
 			return err
+		}
+	}
+
+	// Write tokens a separate subcollection.
+	// Note that the field on the collection struct is ignored, so we can safely write the values to a subcollection manually.
+	if len(collection.Tokens) > 0 {
+		batch := f.client.Batch()
+
+		for i, token := range collection.Tokens {
+			chunk := i + 1
+
+			ref := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", token.ChainId, token.CollectionAddress)).Collection("nfts").Doc(token.TokenId)
+			m := toFirestoreMap(token)
+			batch.Set(ref, m, firestore.MergeAll)
+
+			// commit batch per x items (or if we are at the last item), so we don't exceed firestore's payload size limit
+			if chunk%maxBatchWritesPerRequest == 0 || chunk == len(collection.Tokens) {
+				_, err := batch.Commit(ctx)
+				if err != nil {
+					return err
+				}
+				batch = f.client.Batch()
+			}
 		}
 	}
 

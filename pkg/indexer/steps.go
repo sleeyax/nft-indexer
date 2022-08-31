@@ -37,4 +37,5 @@ var Steps StepMap = map[database.CreationFlow]Step{
 	},
 	database.CollectionCreator:  FindCollectionCreator,
 	database.CollectionMetadata: GetCollectionMetadata,
+	database.TokenMetadata:      GetTokenMetadata,
 }

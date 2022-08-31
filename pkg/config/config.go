@@ -9,10 +9,11 @@ type Configuration struct {
 	OpenSea   OpenSeaConfig
 	Gcloud    GcloudConfig
 	Alchemy   AlchemyConfig
-	Moralis   MoralisConfig
-	Mnemonic  MnemonicConfig
 	QuickNode QuickNodeConfig
-	Zora      ZoraConfig
+	Moralis   ApiKeyConfig
+	Mnemonic  ApiKeyConfig
+	Zora      ApiKeyConfig
+	Reservoir ApiKeyConfig
 }
 
 type OpenSeaConfig struct {
@@ -20,9 +21,7 @@ type OpenSeaConfig struct {
 }
 
 type GcloudConfig struct {
-	Queue struct {
-		ApiKey string
-	}
+	Queue     ApiKeyConfig
 	Firestore FirestoreConfig
 }
 
@@ -31,14 +30,6 @@ type AlchemyConfig struct {
 		MainNet []string
 		Goerli  []string
 	}
-}
-
-type MoralisConfig struct {
-	ApiKey string
-}
-
-type MnemonicConfig struct {
-	ApiKey string
 }
 
 type QuickNodeConfig struct {
@@ -61,7 +52,7 @@ type InfuraIPFSConfig struct {
 	Secret    string
 }
 
-type ZoraConfig struct {
+type ApiKeyConfig struct {
 	ApiKey string
 }
 

@@ -92,10 +92,12 @@ type Attribute struct {
 }
 
 type Create struct {
-	Step      CreationFlow           `firestore:"step,omitempty" json:"step,omitempty"`
-	UpdatedAt int64                  `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
-	Error     map[string]interface{} `firestore:"error,omitempty" json:"error,omitempty"`
-	Progress  int                    `firestore:"progress,omitempty" json:"progress,omitempty"`
+	Step            CreationFlow           `firestore:"step,omitempty" json:"step,omitempty"`
+	UpdatedAt       int64                  `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	Error           map[string]interface{} `firestore:"error,omitempty" json:"error,omitempty"`
+	Progress        int                    `firestore:"progress,omitempty" json:"progress,omitempty"`
+	ReservoirCursor string                 `firestore:"reservoirCursor,omitempty" json:"reservoirCursor"`
+	ZoraCursor      string                 `firestore:"zoraCursor,omitempty" json:"zoraCursor"`
 }
 
 type Export struct {

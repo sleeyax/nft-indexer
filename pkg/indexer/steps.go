@@ -10,10 +10,10 @@ import (
 
 type Step = func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink)
 
-type StepMap = map[database.CreationFlow]Step
+type StepMap = map[database.CreationStep]Step
 
-var Steps StepMap = map[database.CreationFlow]Step{
-	database.Unindexed: func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
+var Steps StepMap = map[database.CreationStep]Step{
+	database.UnindexedStep: func(ctx context.Context, config *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
 		// first step resets the collection
 		collection.IndexInitiator = database.Normalize(ethereum.NullAddress.String())
 		collection.ChainId = string(tokenContract.Contract().NetworkId)
@@ -24,7 +24,7 @@ var Steps StepMap = map[database.CreationFlow]Step{
 			Version: 1,
 			Create: database.Create{
 				Progress:  0,
-				Step:      database.CollectionCreator, // TODO: the main indexer func should be able to read the next step (based on the current one) automatically
+				Step:      database.CollectionCreatorStep, // TODO: the main indexer func should be able to read the next step (based on the current one) automatically
 				UpdatedAt: time.Now().Unix(),
 			},
 			Export: database.Export{Done: false},
@@ -32,10 +32,10 @@ var Steps StepMap = map[database.CreationFlow]Step{
 
 		sink.Write(IndexResult{
 			Collection: collection,
-			Step:       database.Unindexed,
+			Step:       database.UnindexedStep,
 		})
 	},
-	database.CollectionCreator:  FindCollectionCreator,
-	database.CollectionMetadata: GetCollectionMetadata,
-	database.TokenMetadata:      GetTokenMetadata,
+	database.CollectionCreatorStep:  FindCollectionCreator,
+	database.CollectionMetadataStep: GetCollectionMetadata,
+	database.TokenMetadataStep:      GetTokenMetadata,
 }

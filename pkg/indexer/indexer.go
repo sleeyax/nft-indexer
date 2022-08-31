@@ -29,7 +29,7 @@ type IndexResult struct {
 	Warning error
 
 	// Current indexing step.
-	Step database.CreationFlow
+	Step database.CreationStep
 }
 
 // New creates a new NFT indexer.
@@ -78,13 +78,13 @@ func (i *Indexer) Start(ctx context.Context, collection *database.NFTCollection,
 	}
 
 	if collection.State.Create.Step == "" {
-		collection.State.Create.Step = database.Unindexed
+		collection.State.Create.Step = database.UnindexedStep
 	}
 
 	for {
 		select {
 		default:
-			if collection.State.Create.Step == database.Complete {
+			if collection.State.Create.Step == database.CompleteStep {
 				return
 			}
 

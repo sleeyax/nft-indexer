@@ -18,22 +18,22 @@ const (
 	BoostPercentage DisplayType = "boost_percentage"
 )
 
-type CreationFlow string
+type CreationStep string
 
 const (
-	Unindexed          CreationFlow = "unindexed"
-	CollectionCreator  CreationFlow = "collection-creator"
-	CollectionMetadata CreationFlow = "collection-metadata"
-	CollectionMints    CreationFlow = "collection-mints"
-	TokenMetadata      CreationFlow = "token-metadata"
-	TokenMetadataUri   CreationFlow = "token-metadata-uri"
-	AggregateMetadata  CreationFlow = "aggregate-metadata"
-	CacheImage         CreationFlow = "cache-image"
-	ValidateImage      CreationFlow = "validate-image"
-	Complete           CreationFlow = "complete"
-	Incomplete         CreationFlow = "incomplete"
-	Unknown            CreationFlow = "unknown"
-	Invalid            CreationFlow = "invalid"
+	UnindexedStep          CreationStep = "unindexed"
+	CollectionCreatorStep  CreationStep = "collection-creator"
+	CollectionMetadataStep CreationStep = "collection-metadata"
+	CollectionMintsStep    CreationStep = "collection-mints"
+	TokenMetadataStep      CreationStep = "token-metadata"
+	TokenMetadataUriStep   CreationStep = "token-metadata-uri"
+	AggregateMetadataStep  CreationStep = "aggregate-metadata"
+	CacheImageStep         CreationStep = "cache-image"
+	ValidateImageStep      CreationStep = "validate-image"
+	CompleteStep           CreationStep = "complete"
+	IncompleteStep         CreationStep = "incomplete"
+	UnknownStep            CreationStep = "unknown"
+	InvalidStep            CreationStep = "invalid"
 )
 
 type Links struct {
@@ -92,7 +92,7 @@ type Attribute struct {
 }
 
 type Create struct {
-	Step            CreationFlow           `firestore:"step,omitempty" json:"step,omitempty"`
+	Step            CreationStep           `firestore:"step,omitempty" json:"step,omitempty"`
 	UpdatedAt       int64                  `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
 	Error           map[string]interface{} `firestore:"error,omitempty" json:"error,omitempty"`
 	Progress        int                    `firestore:"progress,omitempty" json:"progress,omitempty"`

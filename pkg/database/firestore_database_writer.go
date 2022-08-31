@@ -52,7 +52,7 @@ func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTColl
 	}
 
 	var opts []firestore.SetOption
-	if collection.State.Create.Step == Unindexed {
+	if collection.State.Create.Step == UnindexedStep {
 		opts = append(opts, firestore.MergeAll)
 	}
 

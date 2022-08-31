@@ -30,11 +30,11 @@ func GetCollectionMetadata(ctx context.Context, config *config.Configuration, to
 	}
 
 	collection.State.Create = database.Create{
-		Step:      database.TokenMetadata,
+		Step:      database.TokenMetadataStep,
 		UpdatedAt: time.Now().Unix(),
 	}
 
-	sink.Write(IndexResult{Collection: collection, Step: database.CollectionMetadata})
+	sink.Write(IndexResult{Collection: collection, Step: database.CollectionMetadataStep})
 }
 
 // writeOpenSeaCollectionMetadata writes collection details and metadata from OpenSea to the collection.
@@ -49,7 +49,7 @@ func writeOpenSeaCollectionMetadata(wg *sync.WaitGroup, apiKey string, address s
 
 	osCollection, err := os.GetNFTCollection(address)
 	if err != nil {
-		sink.WriteError(err, database.CollectionMetadata)
+		sink.WriteError(err, database.CollectionMetadataStep)
 		return
 	}
 
@@ -90,7 +90,7 @@ func writeAggregatedStats(wg *sync.WaitGroup, apiKey string, address string, col
 
 	stats, err := z.AggregateStat(address, 10)
 	if err != nil {
-		sink.WriteError(err, database.CollectionMetadata)
+		sink.WriteError(err, database.CollectionMetadataStep)
 		return
 	}
 

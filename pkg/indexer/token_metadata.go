@@ -21,7 +21,7 @@ func GetTokenMetadata(ctx context.Context, config *config.Configuration, tokenCo
 	for true {
 		res, err := reservoir.GetTokensInfo(collection.Address, 50, cursor)
 		if err != nil {
-			sink.WriteError(err, database.CollectionMetadata)
+			sink.WriteError(err, database.CollectionMetadataStep)
 			return
 		}
 

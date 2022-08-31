@@ -9,7 +9,7 @@ import (
 )
 
 func FindCollectionCreator(ctx context.Context, _ *config.Configuration, tokenContract *ethereum.TokenContract, collection *database.NFTCollection, sink *Sink) {
-	step := database.CollectionCreator
+	step := database.CollectionCreatorStep
 
 	ownableContract, err := tokenContract.ToOwnable()
 	if err != nil {
@@ -48,7 +48,7 @@ func FindCollectionCreator(ctx context.Context, _ *config.Configuration, tokenCo
 	collection.Owner = database.Normalize(owner)
 
 	collection.State.Create = database.Create{
-		Step:      database.CollectionMetadata,
+		Step:      database.CollectionMetadataStep,
 		UpdatedAt: time.Now().Unix(),
 	}
 

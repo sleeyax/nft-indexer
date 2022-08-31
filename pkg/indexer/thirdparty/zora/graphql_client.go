@@ -84,7 +84,7 @@ func (g *GraphQlClient) parseTemplate(templ string, data map[string]interface{})
 	return &buffer, nil
 }
 
-func (g *GraphQlClient) AggregateStat(collectionAddress string, topOwnersLimit int) (*GraphQLResponse, error) {
+func (g *GraphQlClient) AggregateStat(collectionAddress string, topOwnersLimit int) (*AggregateStatResponse, error) {
 	buffer, err := g.parseTemplate(queryAggregateStatTemplate, map[string]interface{}{
 		"CollectionAddress": collectionAddress,
 		"TopOwnersLimit":    topOwnersLimit,
@@ -109,7 +109,41 @@ func (g *GraphQlClient) AggregateStat(collectionAddress string, topOwnersLimit i
 		return nil, fmt.Errorf(errorFormat, err)
 	}
 
-	var graphQLResponse GraphQLResponse
+	var graphQLResponse AggregateStatResponse
+	if err = json.Unmarshal([]byte(jsonString), &graphQLResponse); err != nil {
+		return nil, fmt.Errorf(errorFormat, err)
+	}
+
+	return &graphQLResponse, nil
+}
+
+func (g *GraphQlClient) GetTokens(collectionAddress string, limit int, cursor string) (*TokensResponse, error) {
+	buffer, err := g.parseTemplate(queryTokensTemplate, map[string]interface{}{
+		"CollectionAddress": collectionAddress,
+		"After":             cursor,
+		"Limit":             limit,
+	})
+	if err != nil {
+		return nil, fmt.Errorf(errorFormat, err)
+	}
+
+	res, err := g.client.Post("", &gotcha.Options{
+		Json: map[string]interface{}{
+			"operationName": "MyQuery",
+			"query":         buffer.String(),
+			"variables":     nil,
+		},
+	})
+	if err != nil {
+		return nil, fmt.Errorf(errorFormat, err)
+	}
+
+	jsonString, err := res.Text()
+	if err != nil {
+		return nil, fmt.Errorf(errorFormat, err)
+	}
+
+	var graphQLResponse TokensResponse
 	if err = json.Unmarshal([]byte(jsonString), &graphQLResponse); err != nil {
 		return nil, fmt.Errorf(errorFormat, err)
 	}

@@ -38,4 +38,5 @@ var Steps StepMap = map[database.CreationStep]Step{
 	database.CollectionCreatorStep:  FindCollectionCreator,
 	database.CollectionMetadataStep: GetCollectionMetadata,
 	database.TokenMetadataStep:      GetTokenMetadata,
+	database.CollectionMintsStep:    GetTokensAndMintInfo,
 }

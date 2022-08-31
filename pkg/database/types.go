@@ -201,17 +201,24 @@ type NFTCollection struct {
 }
 
 type Erc721Token struct {
-	Slug              string              `firestore:"slug,omitempty" json:"slug,omitempty"`
-	TokenId           string              `firestore:"tokenId,omitempty" json:"tokenId,omitempty"`
-	TokenIdNumeric    int                 `firestore:"tokenIdNumeric,omitempty" json:"tokenIdNumeric,omitempty"`
-	ChainId           string              `firestore:"chainId,omitempty" json:"chainId,omitempty"`
-	CollectionAddress string              `firestore:"collectionAddress,omitempty" json:"collectionAddress,omitempty"`
-	NumTraitTypes     int                 `firestore:"numTraitTypes,omitempty" json:"numTraitTypes,omitempty"`
-	Metadata          Erc721TokenMetadata `firestore:"metadata,omitempty" json:"metadata"`
-	UpdatedAt         int64               `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
-	Owner             string              `firestore:"owner,omitempty" json:"owner,omitempty"`
-	TokenStandard     TokenStandard       `firestore:"tokenStandard,omitempty" json:"tokenStandard,omitempty"`
-	Image             Erc721TokenImage    `firestore:"image,omitempty" json:"image"`
+	Slug                 string              `firestore:"slug,omitempty" json:"slug,omitempty"`
+	TokenId              string              `firestore:"tokenId,omitempty" json:"tokenId,omitempty"`
+	TokenIdNumeric       int                 `firestore:"tokenIdNumeric,omitempty" json:"tokenIdNumeric,omitempty"`
+	ChainId              string              `firestore:"chainId,omitempty" json:"chainId,omitempty"`
+	CollectionAddress    string              `firestore:"collectionAddress,omitempty" json:"collectionAddress,omitempty"`
+	NumTraitTypes        int                 `firestore:"numTraitTypes,omitempty" json:"numTraitTypes,omitempty"`
+	Metadata             Erc721TokenMetadata `firestore:"metadata,omitempty" json:"metadata"`
+	UpdatedAt            int64               `firestore:"updatedAt,omitempty" json:"updatedAt,omitempty"`
+	Owner                string              `firestore:"owner,omitempty" json:"owner,omitempty"`
+	TokenStandard        TokenStandard       `firestore:"tokenStandard,omitempty" json:"tokenStandard,omitempty"`
+	Image                Erc721TokenImage    `firestore:"image,omitempty" json:"image"`
+	MintedAt             int64               `firestore:"mintedAt,omitempty" json:"mintedAt,omitempty"`
+	Minter               string              `firestore:"minter,omitempty" json:"minter,omitempty"`
+	MintTxHash           string              `firestore:"mintTxHash,omitempty" json:"mintTxHash,omitempty"`
+	MintPrice            float64             `firestore:"mintPrice,omitempty" json:"mintPrice,omitempty"`
+	MintCurrencyAddress  string              `firestore:"mintCurrencyAddress,omitempty" json:"mintCurrencyAddress,omitempty"`
+	MintCurrencyDecimals int                 `firestore:"mintCurrencyDecimals,omitempty" json:"mintCurrencyDecimals,omitempty"`
+	MintCurrencyName     string              `firestore:"mintCurrencyName,omitempty" json:"mintCurrencyName,omitempty"`
 }
 
 type Erc721TokenImage struct {

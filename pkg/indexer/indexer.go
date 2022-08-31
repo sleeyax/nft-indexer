@@ -20,9 +20,6 @@ type IndexResult struct {
 	// Currently accumulated NFT collection data.
 	Collection *database.NFTCollection
 
-	// NFT collection statistics received from Zora.
-	Stats *database.NftCollectionStats
-
 	// Fatal error message.
 	// If this field is set, the function that handles the Step has stopped processing information.
 	Error error

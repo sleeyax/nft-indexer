@@ -116,7 +116,7 @@ type Stats struct {
 	TokenCount      int    `firestore:"tokenCount,omitempty" json:"tokenCount,omitempty"`
 }
 
-type NftCollectionStats struct {
+type ZoraNFTStats struct {
 	ChainId                   string      `firestore:"chainId,omitempty" json:"chainId,omitempty"`
 	CollectionAddress         string      `firestore:"collectionAddress,omitempty" json:"collectionAddress,omitempty"`
 	Volume                    float64     `firestore:"volume,omitempty" json:"volume,omitempty"`
@@ -189,4 +189,8 @@ type NFTCollection struct {
 
 	// Attributes/traits.
 	Attributes map[string]Attribute `firestore:"attributes,omitempty" json:"attributes,omitempty"`
+
+	// NFT collection statistics received from Zora.
+	// Note that this information isn't stored in the database.
+	ZoraStats *ZoraNFTStats `firestore:"-" json:"zoraStats,omitempty"`
 }

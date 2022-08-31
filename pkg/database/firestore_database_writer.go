@@ -39,7 +39,18 @@ func NewFirestoreDatabaseWriter(ctx context.Context, cfg *config.Configuration) 
 	return &FirestoreDatabaseWriter{client}, nil
 }
 
-func (f *FirestoreDatabaseWriter) WriteNFTCollection(ctx context.Context, collection *NFTCollection) error {
+func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTCollection) error {
+	// Write statistics from zora to a separate subcollection.
+	// Note that the field on the collection struct is ignored, so we can safely write the values to a subcollection manually.
+	if collection.ZoraStats != nil {
+		m := toFirestoreMap(collection.ZoraStats)
+
+		_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ZoraStats.ChainId, collection.ZoraStats.CollectionAddress)).Collection("collectionStats").Doc("all").Set(ctx, m, firestore.MergeAll)
+		if err != nil {
+			return err
+		}
+	}
+
 	var opts []firestore.SetOption
 	if collection.State.Create.Step == Unindexed {
 		opts = append(opts, firestore.MergeAll)
@@ -48,14 +59,6 @@ func (f *FirestoreDatabaseWriter) WriteNFTCollection(ctx context.Context, collec
 	m := toFirestoreMap(collection)
 
 	_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Set(ctx, m, opts...)
-
-	return err
-}
-
-func (f *FirestoreDatabaseWriter) WriteStats(ctx context.Context, stats *NftCollectionStats) error {
-	m := toFirestoreMap(stats)
-
-	_, err := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", stats.ChainId, stats.CollectionAddress)).Collection("collectionStats").Doc("all").Set(ctx, m, firestore.MergeAll)
 
 	return err
 }

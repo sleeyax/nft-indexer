@@ -80,13 +80,7 @@ func main() {
 
 		// write results to whatever output formats were specified
 		if indexResult.Collection != nil {
-			if err = db.WriteNFTCollection(ctx, indexResult.Collection); err != nil {
-				log.Println(err)
-				return
-			}
-		}
-		if indexResult.Stats != nil {
-			if err = db.WriteStats(ctx, indexResult.Stats); err != nil {
+			if err = db.Write(ctx, indexResult.Collection); err != nil {
 				log.Println(err)
 				return
 			}

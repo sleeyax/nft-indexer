@@ -30,12 +30,8 @@ func (c *ConsoleWriter) Print(data interface{}) error {
 	return nil
 }
 
-func (c *ConsoleWriter) WriteNFTCollection(ctx context.Context, collection *NFTCollection) error {
+func (c *ConsoleWriter) Write(ctx context.Context, collection *NFTCollection) error {
 	return c.Print(collection)
-}
-
-func (c *ConsoleWriter) WriteStats(ctx context.Context, stats *NftCollectionStats) error {
-	return c.Print(stats)
 }
 
 func (c *ConsoleWriter) Close() error {

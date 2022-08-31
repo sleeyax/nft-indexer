@@ -94,17 +94,15 @@ func writeAggregatedStats(wg *sync.WaitGroup, apiKey string, address string, col
 		return
 	}
 
-	sink.Write(IndexResult{
-		Stats: &database.NftCollectionStats{
-			ChainId:                   collection.ChainId,
-			CollectionAddress:         collection.Address,
-			Volume:                    stats.Data.AggregateStat.SalesVolume.ChainTokenPrice,
-			NumSales:                  stats.Data.AggregateStat.SalesVolume.TotalCount,
-			VolumeUSDC:                stats.Data.AggregateStat.SalesVolume.UsdcPrice,
-			NumOwners:                 stats.Data.AggregateStat.OwnerCount,
-			NumNfts:                   stats.Data.AggregateStat.NftCount,
-			TopOwnersByOwnedNftsCount: stats.Data.AggregateStat.OwnersByCount.Nodes,
-			UpdatedAt:                 time.Now().UnixMilli(),
-		},
-	})
+	collection.ZoraStats = &database.ZoraNFTStats{
+		ChainId:                   collection.ChainId,
+		CollectionAddress:         collection.Address,
+		Volume:                    stats.Data.AggregateStat.SalesVolume.ChainTokenPrice,
+		NumSales:                  stats.Data.AggregateStat.SalesVolume.TotalCount,
+		VolumeUSDC:                stats.Data.AggregateStat.SalesVolume.UsdcPrice,
+		NumOwners:                 stats.Data.AggregateStat.OwnerCount,
+		NumNfts:                   stats.Data.AggregateStat.NftCount,
+		TopOwnersByOwnedNftsCount: stats.Data.AggregateStat.OwnersByCount.Nodes,
+		UpdatedAt:                 time.Now().UnixMilli(),
+	}
 }

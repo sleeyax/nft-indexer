@@ -71,24 +71,40 @@ type AttributeMetadata struct {
 	Count int `firestore:"count,omitempty" json:"count,omitempty"`
 
 	// Percentage of tokens with this attribute/trait.
-	Percent int `firestore:"percent,omitempty" json:"percent,omitempty"`
+	Percent float64 `firestore:"percent,omitempty" json:"percent,omitempty"`
 
 	// Equals '1 / (percent / 100)'.
-	RarityScore int `firestore:"rarityScore,omitempty" json:"rarityScore,omitempty"`
+	RarityScore float64 `firestore:"rarityScore,omitempty" json:"rarityScore,omitempty"`
+
+	// Attribute type.
+	Type string `firestore:"attributeType,omitempty" json:"type,omitempty"`
+
+	// Human-searchable slug.
+	TypeSlug string `firestore:"attributeTypeSlug,omitempty" json:"slug,omitempty"`
+
+	Value string `firestore:"attributeValue,omitempty" json:"Value,omitempty"`
+
+	ValueSlug string `firestore:"attributeValueSlug,omitempty" json:"valueSlug,omitempty"`
 }
 
 type Attribute struct {
 	// Defines how the attribute is shown on OpenSea.
 	DisplayType DisplayType `firestore:"displayType,omitempty" json:"displayType,omitempty"`
 
+	// Attribute type.
+	Type string `firestore:"attributeType,omitempty" json:"type,omitempty"`
+
+	// Human-searchable slug.
+	Slug string `firestore:"attributeTypeSlug,omitempty" json:"slug,omitempty"`
+
 	// Number of NFTs with this attribute/trait.
 	Count int `firestore:"count,omitempty" json:"count,omitempty"`
 
 	// Percentage of NFTs with this attribute/trait.
-	Percent int `firestore:"percent,omitempty" json:"percent,omitempty"`
+	Percent float64 `firestore:"percent,omitempty" json:"percent,omitempty"`
 
 	// Inner AttributeMetadata values.
-	Values map[string]AttributeMetadata `firestore:"values,omitempty" json:"values,omitempty"`
+	Values map[string]AttributeMetadata `firestore:"-" json:"values,omitempty"`
 }
 
 type Create struct {
@@ -190,7 +206,7 @@ type NFTCollection struct {
 	Stats StatsOverTime `firestore:"stats,omitempty" json:"stats"`
 
 	// Attributes/traits.
-	Attributes map[string]Attribute `firestore:"attributes,omitempty" json:"attributes,omitempty"`
+	Attributes map[string]Attribute `firestore:"-" json:"attributes,omitempty"`
 
 	// NFT collection statistics received from Zora.
 	// Note that this information isn't stored in the database.
@@ -227,8 +243,9 @@ type Erc721TokenImage struct {
 }
 
 type Erc721TokenAttribute struct {
-	Value     string `firestore:"value,omitempty" json:"value,omitempty"`
-	TraitType string `firestore:"traitType,omitempty" json:"trait_type,omitempty"`
+	Value       string      `firestore:"value,omitempty" json:"value,omitempty"`
+	TraitType   string      `firestore:"traitType,omitempty" json:"trait_type,omitempty"`
+	DisplayType DisplayType `firestore:"displayType,omitempty" json:"displayType,omitempty"`
 }
 
 type Erc721TokenMetadata struct {

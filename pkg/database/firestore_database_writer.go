@@ -77,6 +77,28 @@ func (f *FirestoreDatabaseWriter) Write(ctx context.Context, collection *NFTColl
 		}
 	}
 
+	// Write aggregated attributes and values separate sub-collections.
+	// Note that the fields on the collection struct are ignored, so we can safely write the values to a subcollection manually.
+	if len(collection.Attributes) > 0 {
+		batch := f.client.Batch()
+
+		attributesColl := f.client.Collection(nftCollectionsCollection).Doc(fmt.Sprintf("%s:%s", collection.ChainId, collection.Address)).Collection("attributes")
+
+		for key, attr := range collection.Attributes {
+			ref := attributesColl.Doc(NormalizeDocumentId(key))
+			batch.Set(ref, toFirestoreMap(attr), firestore.MergeAll)
+			for key, value := range attr.Values {
+				ref := ref.Collection("values").Doc(NormalizeDocumentId(key))
+				batch.Set(ref, toFirestoreMap(value), firestore.MergeAll)
+			}
+		}
+
+		_, err := batch.Commit(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
 	var opts []firestore.SetOption
 	if collection.State.Create.Step == UnindexedStep {
 		opts = append(opts, firestore.MergeAll)

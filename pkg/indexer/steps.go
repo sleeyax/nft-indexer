@@ -53,5 +53,6 @@ var Steps StepMap = map[database.CreationStep]Step{
 			Step:       database.TokenMetadataStep,
 		})
 	},
-	database.CollectionMintsStep: GetTokensAndMintInfo,
+	database.CollectionMintsStep:   GetTokensAndMintInfo,
+	database.AggregateMetadataStep: AggregateMetadata,
 }

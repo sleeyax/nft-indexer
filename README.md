@@ -1,6 +1,14 @@
 # NFT indexer
 Concurrent NFT indexer.
 
+
+> [!WARNING]  
+>  **No longer maintained**
+> 
+> I used to work on this project as an experimental side-project while working on the [Infinity NFT marketplace](https://github.com/infinitydotxyz) back in 2022.
+> Given the project has long since been discontinued and its source code disclosed, I decided to make this project public as well.
+> Batteries are not included as some things may be missinng or broken. If you wish to continue this project or reuse parts of it then you're on you own :) 
+
 ## Installation
 Requires go version 1.18+ to be installed on your system.
 
